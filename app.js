@@ -29,17 +29,42 @@ async function showWeather() {
 <p> Umiditate: ${weather.main.humidity} </p>
 <p> Presiune: ${weather.main.pressure} </p>
 <p> Temperatura curenta: ${weather.main.temp} </p>
-<p>Maxima zilei: ${weather.main.temp_max} </p>
-         <p>Minima zilei: ${weather.main.temp_min} </p>
+<p> Maxima zilei: ${weather.main.temp_max} </p>
+<p> Minima zilei: ${weather.main.temp_min} </p>
 
 
   </div>
   `;
 }
 
+// Obținerea datelor de prognoză. Se face o cerere la API-ul de prognoză și se stochează datele în variabila 'forecast'
 async function showForecast() {
   const city = cityInput.value;
   const response = await fetch(`${URL_FORECAST_WEATHER}${city}`);
-  const forecast = await response.json();
+  const forecast = await response.json(); //forecast este obiectul JSON primit ca răspuns de la API-ul de prognoză meteo
   console.log(forecast);
+
+  //   // Afisarea prognozei pe 6 zile din 3 in 3 ore
+
+  //forecast.list este o proprietate a acestui obiect (forecast) care conține o listă de prognoze,
+  //   fiecare reprezentând datele meteo pentru un interval specific de timp (în acest caz, din 3 în 3 ore).
+
+  // funcție arrow care este apelată pentru fiecare element (item) din forecast.list
+
+  let forecastHTML = "<h2>Prognoza pe următoarele zile (din 3 în 3 ore)</h2>";
+
+  forecast.list.forEach((item) => {
+    const iconCode = item.weather[0].icon;
+    const iconImageUrl = `http://openweathermap.org/img/w/${iconCode}.png`;
+    forecastHTML += `
+        <div>
+          <h4>${new Date(item.dt_txt).toLocaleString()}</h4>
+          <img src=${iconImageUrl} />
+          <p> Temperatura: ${item.main.temp} °C </p>
+          <p> Descriere: ${item.weather[0].description} </p>
+          
+        </div>
+      `;
+  });
+  forecastContainer.innerHTML = forecastHTML;
 }
